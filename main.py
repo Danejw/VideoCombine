@@ -1,3 +1,6 @@
+
+
+
 import os
 import subprocess
 import re
@@ -222,7 +225,19 @@ async def process_video(audio_path, image_path, video_path):
     print("\n" + "=" * 30)
     print("STARTING VIDEO GENERATION")
     print("=" * 30)
+<<<<<<< Updated upstream
     print(f"Command: {' '.join(cmd)}")
+=======
+    print(f"🎬 FFmpeg executable: {ffmpeg_path}")
+    print(f"🎵 Audio file: {audio_path}")
+    print(f"🖼️ Image file: {image_path}")
+    print(f"🎥 Output file: {video_path}")
+    
+    if subs_path:
+        print(f"📝 Subtitle file: {subs_path}")
+    else:
+        print("📝 No subtitles will be added")
+>>>>>>> Stashed changes
     
     try:
         # Use subprocess.run for simple execution
@@ -387,6 +402,96 @@ async def process_video_short(audio_path, image_path, video_path):
     # Return the video file
     return FileResponse(video_path, media_type="video/mp4", filename="output_short.mp4")
 
+<<<<<<< Updated upstream
+=======
+
+@app.post("/combine")
+async def combine_media(request: CombineRequest):
+    print("=" * 50)
+    print("NEW REQUEST STARTED")
+    print("=" * 50)
+    print("request", request)
+
+    audio_url = request.audio_url
+    image_url = request.image_url
+
+    # Ensure tmp directory exists
+    tmp_dir = "./tmp"
+    os.makedirs(tmp_dir, exist_ok=True)
+
+    audio_path = os.path.join(tmp_dir, "audio.mp3")
+    image_path = os.path.join(tmp_dir, "image.jpg")
+    video_path = os.path.join(tmp_dir, "output.mp4")
+    subs_path_ass = os.path.join(tmp_dir, "kara.ass")
+    subs_path_srt = os.path.join(tmp_dir, "kara.srt")
+
+    # Remove existing files
+    for path in [audio_path, image_path, video_path, subs_path_ass, subs_path_srt]:
+        if os.path.exists(path):
+            os.remove(path)
+            print(f"Removed existing file: {path}")
+
+    try:
+        # Download audio
+        print("\n" + "=" * 30)
+        print("DOWNLOADING AUDIO")
+        print("=" * 30)
+        if not download_file(audio_url, audio_path):
+            raise Exception("Failed to download audio file")
+
+        if not verify_file(audio_path, "Audio"):
+            raise Exception("Audio download failed or file is invalid")
+
+        # Download image
+        print("\n" + "=" * 30)
+        print("DOWNLOADING IMAGE")
+        print("=" * 30)
+        if not download_file(image_url, image_path):
+            raise Exception("Failed to download image file")
+
+        if not verify_file(image_path, "Image"):
+            raise Exception("Image download failed or file is invalid")
+
+    except Exception as e:
+        print(f"Download error: {e}")
+        raise Exception(f"Failed to download files: {e}")
+
+    # Transcribe and build subtitles
+    print("\n" + "=" * 30)
+    print("GENERATING SUBTITLES")
+    print("=" * 30)
+    subs_path = None
+    try:
+        print("🎯 Step 1: Transcribing audio...")
+        segments = transcribe_audio(audio_path)
+        
+        print("🎯 Step 2: Converting to subtitle formats...")
+        # Try ASS format first (for karaoke effects)
+        try:
+            words_to_karaoke_ass(segments, subs_path_ass)
+            subs_path = subs_path_ass
+            print("✅ ASS subtitles generated successfully")
+        except Exception as ass_error:
+            print(f"⚠️ ASS generation failed: {ass_error}")
+            # Fallback to enhanced SRT format
+            create_enhanced_srt(segments, subs_path_srt)
+            subs_path = subs_path_srt
+            print("✅ SRT subtitles generated as fallback")
+            
+    except Exception as e:
+        print(f"⚠️ Subtitle generation failed: {e}")
+        print("   📝 Error details:", str(e))
+        print("   🔄 Proceeding without subtitles...")
+        subs_path = None
+
+    print("\n" + "=" * 30)
+    print("STARTING VIDEO PROCESSING")
+    print("=" * 30)
+    
+    return await process_video(audio_path, image_path, video_path)  #, subs_path)
+
+
+>>>>>>> Stashed changes
 @app.post("/combine-short")
 async def combine_media_short(request: CombineShortRequest):
     print("=" * 50)
@@ -453,4 +558,35 @@ async def combine_media_short(request: CombineShortRequest):
         print(f"Download error: {e}")
         raise Exception(f"Failed to download files: {e}")
         
+<<<<<<< Updated upstream
     return await process_video_short(audio_path, image_path, video_path)
+=======
+        print("🎯 Step 2: Converting to subtitle formats (59s limit)...")
+        # Try ASS format first (for karaoke effects)
+        try:
+            words_to_karaoke_ass(segments, subs_path_ass, max_time=59.0)
+            subs_path = subs_path_ass
+            print("✅ ASS subtitles generated successfully")
+        except Exception as ass_error:
+            print(f"⚠️ ASS generation failed: {ass_error}")
+            # Fallback to enhanced SRT format
+            create_enhanced_srt(segments, subs_path_srt, max_time=59.0)
+            subs_path = subs_path_srt
+            print("✅ Enhanced SRT subtitles generated as fallback")
+            
+    except Exception as e:
+        print(f"⚠️ Subtitle generation failed: {e}")
+        print("   📝 Error details:", str(e))
+        print("   🔄 Proceeding without subtitles...")
+        subs_path = None
+
+    print("\n" + "=" * 30)
+    print("STARTING SHORT VIDEO PROCESSING")
+    print("=" * 30)
+
+    return await process_video_short(audio_path, image_path, video_path, subs_path)
+
+
+
+
+>>>>>>> Stashed changes
