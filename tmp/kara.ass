@@ -12,3 +12,30 @@ Style: Karaoke,Segoe UI,48,&H00FFFFFF,&H0087CEEB,&H00000000,&H80000000,1,0,0,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:05.78,Karaoke,,0,0,0,,{\k78} I{\k37} saw{\k42} you{\k71} there{\k92} standing{\k48} under{\k31} the{\k42} mingle{\k134} tree
+Dialogue: 0,0:00:07.00,0:00:11.93,Karaoke,,0,0,0,,{\k45} A{\k51} beautiful{\k108} woman{\k83} who{\k32} looks{\k24} so{\k53} fine{\k32} to{\k67} me
+Dialogue: 0,0:00:13.00,0:00:18.32,Karaoke,,0,0,0,,{\k56} She{\k43} had{\k32} all{\k27} the{\k66} things{\k113} that{\k52} I've{\k23} been{\k44} searching{\k71} for
+Dialogue: 0,0:00:19.00,0:00:22.69,Karaoke,,0,0,0,,{\k45} She{\k35} had{\k41} beach{\k30}-blown{\k50} hair,{\k22} a{\k32} flower{\k45} in{\k14} her{\k50} ear
+Dialogue: 0,0:00:22.69,0:00:26.96,Karaoke,,0,0,0,,{\k69} And{\k52} bongo{\k83} shorts,{\k30} she's{\k19} my{\k57} honey{\k74} baby
+Dialogue: 0,0:00:27.95,0:00:33.64,Karaoke,,0,0,0,,{\k80} My{\k66} honey{\k95} baby,{\k152} my{\k67} honey{\k89} baby
+Dialogue: 0,0:00:37.67,0:00:42.25,Karaoke,,0,0,0,,{\k80} So{\k80} girl,{\k17} I{\k32} want{\k26} you{\k15} to{\k32} know{\k35} that{\k42} wherever{\k57} you{\k35} go
+Dialogue: 0,0:00:42.25,0:00:44.38,Karaoke,,0,0,0,,{\k50} I{\k34} won't{\k15} be{\k35} far{\k76} away
+Dialogue: 0,0:00:45.70,0:00:48.75,Karaoke,,0,0,0,,{\k40} As{\k17} I{\k23} kiss{\k39} your{\k42} lips{\k39} while{\k22} you{\k25} sway{\k33} your{\k46} hips
+Dialogue: 0,0:00:48.75,0:00:53.24,Karaoke,,0,0,0,,{\k92} You'll{\k17} just{\k38} hear{\k21} me{\k47} say,{\k54} she's{\k21} my{\k51} honey{\k80} baby
+Dialogue: 0,0:00:54.59,0:00:59.89,Karaoke,,0,0,0,,{\k56} My{\k56} honey{\k98} baby,{\k153} my{\k67} honey{\k85} baby
+Dialogue: 0,0:01:04.42,0:01:08.51,Karaoke,,0,0,0,,{\k56} You{\k56} say{\k19} my{\k34} sweet{\k40} honey{\k53} baby,{\k17} yes{\k8} you{\k21} know{\k21} I{\k20} love{\k15} you{\k31} so
+Dialogue: 0,0:01:08.51,0:01:11.70,Karaoke,,0,0,0,,{\k52} So{\k33} hold{\k26} on{\k34} tight{\k31} and{\k28} baby,{\k28} never{\k29} let{\k34} go
+Dialogue: 0,0:01:11.70,0:01:15.14,Karaoke,,0,0,0,,{\k37} Because{\k21} you{\k24} know{\k15} that{\k23} when{\k20} you{\k23} call{\k21} me{\k26} I'll{\k9} be{\k32} there{\k26} when{\k27} I{\k32} can
+Dialogue: 0,0:01:15.14,0:01:17.85,Karaoke,,0,0,0,,{\k48} And{\k17} you{\k21} can{\k28} count{\k15} on{\k22} me{\k17} because{\k28} I'm{\k12} your{\k59} superman
+Dialogue: 0,0:01:17.85,0:01:22.14,Karaoke,,0,0,0,,{\k35} She's{\k20} my{\k42} honey{\k71} baby,{\k179} my{\k68} honey{\k29} baby
+Dialogue: 0,0:01:24.12,0:01:29.62,Karaoke,,0,0,0,,{\k57} My{\k57} honey{\k98} baby,{\k167} my{\k64} honey{\k104} baby
+Dialogue: 0,0:01:30.34,0:01:34.93,Karaoke,,0,0,0,,{\k57} Girl,{\k12} I{\k28} just{\k35} told{\k20} you{\k25} how{\k16} I{\k28} feel{\k43} for{\k45} you
+Dialogue: 0,0:01:34.93,0:01:38.29,Karaoke,,0,0,0,,{\k40} In{\k42} every{\k21} word{\k20} I{\k31} said,{\k34} yes{\k20} you{\k25} know{\k60} it's{\k39} true
+Dialogue: 0,0:01:38.29,0:01:41.42,Karaoke,,0,0,0,,{\k29} But{\k28} before{\k21} I{\k21} go,{\k28} there's{\k10} just{\k21} one{\k19} more{\k22} thing{\k39} my{\k48} darling
+Dialogue: 0,0:01:41.42,0:01:44.20,Karaoke,,0,0,0,,{\k15} I{\k18} give{\k21} you{\k33} total{\k48} commitment{\k43} girl{\k24} with{\k14} this{\k33} wedding{\k24} ring
+Dialogue: 0,0:01:44.20,0:01:49.35,Karaoke,,0,0,0,,{\k31} She's{\k20} my{\k37} honey{\k84} baby,{\k174} my{\k65} honey{\k101} baby
+Dialogue: 0,0:01:50.15,0:01:55.71,Karaoke,,0,0,0,,{\k76} My{\k67} honey{\k96} baby,{\k142} my{\k62} honey{\k85} baby
+Dialogue: 0,0:01:55.71,0:02:00.42,Karaoke,,0,0,0,,{\k92} Yes,{\k15} I{\k21} want{\k28} you{\k20} to{\k28} know{\k34} that{\k37} you're{\k28} mine
+Dialogue: 0,0:02:00.42,0:02:06.14,Karaoke,,0,0,0,,{\k71} All{\k31} of{\k18} the{\k51} time,{\k14} rain{\k40} or{\k47} shine,{\k45} girl{\k54} you're{\k114} mine
+Dialogue: 0,0:02:10.62,0:02:13.58,Karaoke,,0,0,0,,{\k68} Yes,{\k9} I{\k26} want{\k29} you{\k18} to{\k34} know{\k25} that{\k43} you're{\k26} mine
+Dialogue: 0,0:02:13.58,0:02:19.21,Karaoke,,0,0,0,,{\k73} All{\k28} of{\k20} the{\k56} time,{\k0} rain{\k37} or{\k48} shine,{\k14} girl{\k63} you're{\k102} mine
