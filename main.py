@@ -225,20 +225,13 @@ async def process_video(audio_path, image_path, video_path):
     print("\n" + "=" * 30)
     print("STARTING VIDEO GENERATION")
     print("=" * 30)
-<<<<<<< Updated upstream
     print(f"Command: {' '.join(cmd)}")
-=======
     print(f"🎬 FFmpeg executable: {ffmpeg_path}")
     print(f"🎵 Audio file: {audio_path}")
     print(f"🖼️ Image file: {image_path}")
     print(f"🎥 Output file: {video_path}")
     
-    if subs_path:
-        print(f"📝 Subtitle file: {subs_path}")
-    else:
-        print("📝 No subtitles will be added")
->>>>>>> Stashed changes
-    
+
     try:
         # Use subprocess.run for simple execution
         print("Running FFmpeg... (this may take a few moments)")
