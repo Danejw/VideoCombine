@@ -87,4 +87,16 @@ coverage.xml
 dmypy.json
 
 # pytest
-.pytest_cache/ 
+.pytest_cache/
+
+# Temporary and media files
+tmp/
+*.mp3
+*.jpg
+*.mp4
+*.ass
+*.srt
+
+# OS-generated files
+.DS_Store
+Thumbs.db 

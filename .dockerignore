@@ -1,4 +1,32 @@
+# Git and Docker config
+.git
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Python virtual environment and cache
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Project documentation
+README.md
+
+# Temporary files directory
 tmp/
+
+# Python virtual environment and cache
 __pycache__/
 *.pyc
 *.pyo
