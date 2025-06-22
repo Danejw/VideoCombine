@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  video-combine:
+    build:
+      target: development
+    volumes:
+      - .:/app  # Live code sync
+    command: uvicorn main:app --host 0.0.0.0 --port 8005 --reload
+    environment:
+      - ENVIRONMENT=development 

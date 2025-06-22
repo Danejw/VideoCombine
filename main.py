@@ -1,6 +1,7 @@
 import os
 import subprocess
 import re
+import platform
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -102,9 +103,6 @@ def create_enhanced_srt(segments, output_path: str, max_time: float = None):
             f.write(f"{start_time_srt} --> {end_time_srt}\n")
             f.write(f"{text}\n\n")
             i += 1
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8005)
 
 
 class CombineRequest(BaseModel):
@@ -281,12 +279,18 @@ def verify_file(file_path, file_type):
 
 async def process_video(audio_path, image_path, video_path, subs_path=None):
     """Common video processing logic - simplified without progress tracking"""
-    ffmpeg_path = os.path.join(os.getcwd(), "ffmpeg", "ffmpeg.exe")
+    ffmpeg_path = get_ffmpeg_path()
     
-    # Verify ffmpeg exists
-    if not os.path.exists(ffmpeg_path):
-        print(f"ERROR: FFmpeg not found at {ffmpeg_path}")
-        raise Exception(f"FFmpeg executable not found at {ffmpeg_path}")
+    # Test if ffmpeg is available
+    try:
+        result = subprocess.run([ffmpeg_path, "-version"], capture_output=True, text=True, timeout=10)
+        if result.returncode != 0:
+            raise Exception(f"FFmpeg test failed with return code {result.returncode}")
+        print(f"✅ FFmpeg found and working: {ffmpeg_path}")
+        print(f"FFmpeg version info: {result.stdout.split(chr(10))[0]}")  # First line only
+    except Exception as e:
+        print(f"ERROR: FFmpeg test failed: {e}")
+        raise Exception(f"FFmpeg executable not available: {ffmpeg_path}")
 
     # FFmpeg command - simplified
     cmd = [
@@ -332,13 +336,24 @@ async def process_video(audio_path, image_path, video_path, subs_path=None):
             timeout=300  # 5 minute timeout
         )
         
-        if result.returncode != 0:
-            print(f"FFmpeg return code: {result.returncode}")
+        print(f"FFmpeg return code: {result.returncode}")
+        
+        # Always log stdout and stderr for debugging
+        if result.stdout:
             print("FFmpeg stdout:")
             print(result.stdout)
+        
+        if result.stderr:
             print("FFmpeg stderr:")
             print(result.stderr)
-            raise Exception(f"FFmpeg failed with return code {result.returncode}")
+        
+        if result.returncode != 0:
+            error_msg = f"FFmpeg failed with return code {result.returncode}"
+            if result.stderr:
+                error_msg += f"\nSTDERR: {result.stderr}"
+            if result.stdout:
+                error_msg += f"\nSTDOUT: {result.stdout}"
+            raise Exception(error_msg)
         
         # Verify output file
         if not os.path.exists(video_path):
@@ -357,19 +372,29 @@ async def process_video(audio_path, image_path, video_path, subs_path=None):
         raise Exception("Video generation timed out")
     except Exception as e:
         print(f"FFmpeg error: {e}")
-        raise Exception(f"Video generation failed: {e}")
+        # Don't wrap the exception again if it already contains FFmpeg details
+        if "FFmpeg failed with return code" in str(e):
+            raise e
+        else:
+            raise Exception(f"Video generation failed: {e}")
 
     # Return the video file
     return FileResponse(video_path, media_type="video/mp4", filename="output.mp4")
 
 async def process_video_short(audio_path, image_path, video_path, subs_path=None):
     """Process video for 9:16 aspect ratio with 59 second limit"""
-    ffmpeg_path = os.path.join(os.getcwd(), "ffmpeg", "ffmpeg.exe")
+    ffmpeg_path = get_ffmpeg_path()
     
-    # Verify ffmpeg exists
-    if not os.path.exists(ffmpeg_path):
-        print(f"ERROR: FFmpeg not found at {ffmpeg_path}")
-        raise Exception(f"FFmpeg executable not found at {ffmpeg_path}")
+    # Test if ffmpeg is available
+    try:
+        result = subprocess.run([ffmpeg_path, "-version"], capture_output=True, text=True, timeout=10)
+        if result.returncode != 0:
+            raise Exception(f"FFmpeg test failed with return code {result.returncode}")
+        print(f"✅ FFmpeg found and working: {ffmpeg_path}")
+        print(f"FFmpeg version info: {result.stdout.split(chr(10))[0]}")  # First line only
+    except Exception as e:
+        print(f"ERROR: FFmpeg test failed: {e}")
+        raise Exception(f"FFmpeg executable not available: {ffmpeg_path}")
 
     # FFmpeg command for 9:16 vertical video, 59 seconds max
     cmd = [
@@ -414,13 +439,24 @@ async def process_video_short(audio_path, image_path, video_path, subs_path=None
             timeout=300  # 5 minute timeout
         )
         
-        if result.returncode != 0:
-            print(f"FFmpeg return code: {result.returncode}")
+        print(f"FFmpeg return code: {result.returncode}")
+        
+        # Always log stdout and stderr for debugging
+        if result.stdout:
             print("FFmpeg stdout:")
             print(result.stdout)
+        
+        if result.stderr:
             print("FFmpeg stderr:")
             print(result.stderr)
-            raise Exception(f"FFmpeg failed with return code {result.returncode}")
+        
+        if result.returncode != 0:
+            error_msg = f"FFmpeg failed with return code {result.returncode}"
+            if result.stderr:
+                error_msg += f"\nSTDERR: {result.stderr}"
+            if result.stdout:
+                error_msg += f"\nSTDOUT: {result.stdout}"
+            raise Exception(error_msg)
         
         # Verify output file
         if not os.path.exists(video_path):
@@ -440,11 +476,14 @@ async def process_video_short(audio_path, image_path, video_path, subs_path=None
         raise Exception("Video generation timed out")
     except Exception as e:
         print(f"FFmpeg error: {e}")
-        raise Exception(f"Video generation failed: {e}")
+        # Don't wrap the exception again if it already contains FFmpeg details
+        if "FFmpeg failed with return code" in str(e):
+            raise e
+        else:
+            raise Exception(f"Video generation failed: {e}")
 
     # Return the video file
     return FileResponse(video_path, media_type="video/mp4", filename="output_short.mp4")
-
 
 @app.post("/combine")
 async def combine_media(request: CombineRequest):
@@ -632,4 +671,27 @@ async def combine_media_short(request: CombineShortRequest):
     print("=" * 30)
 
     return await process_video_short(audio_path, image_path, video_path, subs_path)
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
+
+
+# 192.168.0.19
+
+def get_ffmpeg_path():
+    """Get the correct FFmpeg path based on the operating system"""
+    if platform.system() == "Windows":
+        # For local Windows development
+        ffmpeg_path = os.path.join(os.getcwd(), "ffmpeg", "ffmpeg.exe")
+        if os.path.exists(ffmpeg_path):
+            return ffmpeg_path
+        # Fallback to system PATH
+        return "ffmpeg"
+    else:
+        # For Linux/Docker - use system-installed ffmpeg
+        return "ffmpeg"
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8005)
 
