@@ -93,6 +93,7 @@ dmypy.json
 # Temporary and media files
 tmp/
 *.mp3
+*.png
 *.jpg
 *.mp4
 *.ass

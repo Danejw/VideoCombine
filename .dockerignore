@@ -23,8 +23,14 @@ Thumbs.db
 # Project documentation
 README.md
 
-# Temporary files directory
+# Temporary files directory and media files
 tmp/
+*.mp3
+*.png
+*.jpg
+*.mp4
+*.ass
+*.srt
 
 # Python virtual environment and cache
 __pycache__/
@@ -36,4 +42,4 @@ env/
 venv/
 .env
 .git
-.gitignore 
+.gitignore
