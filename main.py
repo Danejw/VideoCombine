@@ -22,10 +22,33 @@ app.add_middleware(
 )
 
 # Load the whisper model at startup
-model_size = "base"
+model_size = "large-v3"  # Use the most accurate model
 # Using "auto" for device selection, it will use "cuda" if available.
 # Forcing CPU device to avoid CUDA/cuDNN dependency issues.
 whisper_model = WhisperModel(model_size, device="cpu", compute_type="int8")
+
+
+class CombineRequest(BaseModel):
+    audio_url: str
+    image_url: str
+
+class CombineShortRequest(BaseModel):
+    audio_url: str
+    image_url: str
+
+
+def get_ffmpeg_path():
+    """Get the correct FFmpeg path based on the operating system"""
+    if platform.system() == "Windows":
+        # For local Windows development
+        ffmpeg_path = os.path.join(os.getcwd(), "ffmpeg", "ffmpeg.exe")
+        if os.path.exists(ffmpeg_path):
+            return ffmpeg_path
+        # Fallback to system PATH
+        return "ffmpeg"
+    else:
+        # For Linux/Docker - use system-installed ffmpeg
+        return "ffmpeg"
 
 def transcribe_audio(audio_path: str):
     """Transcribes the audio file using faster-whisper."""
@@ -103,16 +126,6 @@ def create_enhanced_srt(segments, output_path: str, max_time: float = None):
             f.write(f"{start_time_srt} --> {end_time_srt}\n")
             f.write(f"{text}\n\n")
             i += 1
-
-
-class CombineRequest(BaseModel):
-    audio_url: str
-    image_url: str
-
-class CombineShortRequest(BaseModel):
-    audio_url: str
-    image_url: str
-
 
 def download_google_drive_file(url, output_path):
     """Download file from Google Drive with comprehensive handling"""
@@ -676,21 +689,6 @@ async def combine_media_short(request: CombineShortRequest):
 async def health_check():
     return {"status": "healthy"}
 
-
-# 192.168.0.19
-
-def get_ffmpeg_path():
-    """Get the correct FFmpeg path based on the operating system"""
-    if platform.system() == "Windows":
-        # For local Windows development
-        ffmpeg_path = os.path.join(os.getcwd(), "ffmpeg", "ffmpeg.exe")
-        if os.path.exists(ffmpeg_path):
-            return ffmpeg_path
-        # Fallback to system PATH
-        return "ffmpeg"
-    else:
-        # For Linux/Docker - use system-installed ffmpeg
-        return "ffmpeg"
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8005)
