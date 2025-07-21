@@ -22,19 +22,21 @@ app.add_middleware(
 )
 
 # Load the whisper model at startup
-model_size = "large-v3"  # Use the most accurate model
+model_size = "base"
 # Using "auto" for device selection, it will use "cuda" if available.
 # Forcing CPU device to avoid CUDA/cuDNN dependency issues.
-whisper_model = WhisperModel(model_size, device="cpu", compute_type="int8")
+# whisper_model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
 
 class CombineRequest(BaseModel):
     audio_url: str
     image_url: str
+    transcribe_audio: bool = False
 
 class CombineShortRequest(BaseModel):
     audio_url: str
     image_url: str
+    transcribe_audio: bool = False
 
 
 def get_ffmpeg_path():
@@ -50,11 +52,7 @@ def get_ffmpeg_path():
         # For Linux/Docker - use system-installed ffmpeg
         return "ffmpeg"
 
-def transcribe_audio(audio_path: str):
-    """Transcribes the audio file using faster-whisper."""
-    segments, info = whisper_model.transcribe(audio_path, word_timestamps=True)
-    print(f"Detected language '{info.language}' with probability {info.language_probability}")
-    return list(segments)
+
 
 def format_time_ass(seconds: float) -> str:
     """Formats time for ASS subtitle format (H:MM:SS.ss)."""
@@ -507,6 +505,7 @@ async def combine_media(request: CombineRequest):
 
     audio_url = request.audio_url
     image_url = request.image_url
+    transcribe_audio = request.transcribe_audio
 
     # Ensure tmp directory exists
     tmp_dir = "./tmp"
@@ -549,33 +548,39 @@ async def combine_media(request: CombineRequest):
         print(f"Download error: {e}")
         raise Exception(f"Failed to download files: {e}")
 
-    # Transcribe and build subtitles
-    print("\n" + "=" * 30)
-    print("GENERATING SUBTITLES")
-    print("=" * 30)
+    # Transcribe and build subtitles (only if requested)
     subs_path = None
-    try:
-        print("🎯 Step 1: Transcribing audio...")
-        segments = transcribe_audio(audio_path)
-        
-        print("🎯 Step 2: Converting to subtitle formats...")
-        # Try ASS format first (for karaoke effects)
+    if transcribe_audio:
+        print("\n" + "=" * 30)
+        print("GENERATING SUBTITLES")
+        print("=" * 30)
         try:
-            words_to_karaoke_ass(segments, subs_path_ass)
-            subs_path = subs_path_ass
-            print("✅ ASS subtitles generated successfully")
-        except Exception as ass_error:
-            print(f"⚠️ ASS generation failed: {ass_error}")
-            # Fallback to enhanced SRT format
-            create_enhanced_srt(segments, subs_path_srt)
-            subs_path = subs_path_srt
-            print("✅ SRT subtitles generated as fallback")
+            print("🎯 Step 1: Transcribing audio...")
+            segments = transcribe_audio(audio_path)
             
-    except Exception as e:
-        print(f"⚠️ Subtitle generation failed: {e}")
-        print("   📝 Error details:", str(e))
-        print("   🔄 Proceeding without subtitles...")
-        subs_path = None
+            print("🎯 Step 2: Converting to subtitle formats...")
+            # Try ASS format first (for karaoke effects)
+            try:
+                words_to_karaoke_ass(segments, subs_path_ass)
+                subs_path = subs_path_ass
+                print("✅ ASS subtitles generated successfully")
+            except Exception as ass_error:
+                print(f"⚠️ ASS generation failed: {ass_error}")
+                # Fallback to enhanced SRT format
+                create_enhanced_srt(segments, subs_path_srt)
+                subs_path = subs_path_srt
+                print("✅ SRT subtitles generated as fallback")
+                
+        except Exception as e:
+            print(f"⚠️ Subtitle generation failed: {e}")
+            print("   📝 Error details:", str(e))
+            print("   🔄 Proceeding without subtitles...")
+            subs_path = None
+    else:
+        print("\n" + "=" * 30)
+        print("SKIPPING SUBTITLE GENERATION")
+        print("=" * 30)
+        print("📝 Transcription disabled - proceeding without subtitles")
 
     print("\n" + "=" * 30)
     print("STARTING VIDEO PROCESSING")
@@ -592,6 +597,7 @@ async def combine_media_short(request: CombineShortRequest):
     
     audio_url = request.audio_url
     image_url = request.image_url
+    transcribe_audio = request.transcribe_audio
     
     # Validate URLs are provided
     if not audio_url or not audio_url.strip():
@@ -609,6 +615,7 @@ async def combine_media_short(request: CombineShortRequest):
     
     print(f"Audio URL: {audio_url}")
     print(f"Image URL: {image_url}")
+    print(f"Transcribe Audio: {transcribe_audio}")
     
     # Ensure tmp directory exists
     tmp_dir = "./tmp"
@@ -651,33 +658,39 @@ async def combine_media_short(request: CombineShortRequest):
         print(f"Download error: {e}")
         raise Exception(f"Failed to download files: {e}")
         
-    # Transcribe and build subtitles
-    print("\n" + "=" * 30)
-    print("GENERATING SUBTITLES")
-    print("=" * 30)
+    # Transcribe and build subtitles (only if requested)
     subs_path = None
-    try:
-        print("🎯 Step 1: Transcribing audio...")
-        segments = transcribe_audio(audio_path)
-        
-        print("🎯 Step 2: Converting to subtitle formats (59s limit)...")
-        # Try ASS format first (for karaoke effects)
+    if transcribe_audio:
+        print("\n" + "=" * 30)
+        print("GENERATING SUBTITLES")
+        print("=" * 30)
         try:
-            words_to_karaoke_ass(segments, subs_path_ass, max_time=59.0)
-            subs_path = subs_path_ass
-            print("✅ ASS subtitles generated successfully")
-        except Exception as ass_error:
-            print(f"⚠️ ASS generation failed: {ass_error}")
-            # Fallback to enhanced SRT format
-            create_enhanced_srt(segments, subs_path_srt, max_time=59.0)
-            subs_path = subs_path_srt
-            print("✅ Enhanced SRT subtitles generated as fallback")
+            print("🎯 Step 1: Transcribing audio...")
+            segments = transcribe_audio(audio_path)
+            
+            print("🎯 Step 2: Converting to subtitle formats (59s limit)...")
+            # Try ASS format first (for karaoke effects)
+            try:
+                words_to_karaoke_ass(segments, subs_path_ass, max_time=59.0)
+                subs_path = subs_path_ass
+                print("✅ ASS subtitles generated successfully")
+            except Exception as ass_error:
+                print(f"⚠️ ASS generation failed: {ass_error}")
+                # Fallback to enhanced SRT format
+                create_enhanced_srt(segments, subs_path_srt, max_time=59.0)
+                subs_path = subs_path_srt
+                print("✅ Enhanced SRT subtitles generated as fallback")
 
-    except Exception as e:
-        print(f"⚠️ Subtitle generation failed: {e}")
-        print("   📝 Error details:", str(e))
-        print("   🔄 Proceeding without subtitles...")
-        subs_path = None
+        except Exception as e:
+            print(f"⚠️ Subtitle generation failed: {e}")
+            print("   📝 Error details:", str(e))
+            print("   🔄 Proceeding without subtitles...")
+            subs_path = None
+    else:
+        print("\n" + "=" * 30)
+        print("SKIPPING SUBTITLE GENERATION")
+        print("=" * 30)
+        print("📝 Transcription disabled - proceeding without subtitles")
 
     print("\n" + "=" * 30)
     print("STARTING SHORT VIDEO PROCESSING")
