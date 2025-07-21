@@ -51,5 +51,5 @@ USER appuser
 # Expose the port
 EXPOSE 8005
 
-# Use Gunicorn for production
-CMD ["gunicorn", "main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "600", "--bind", "0.0.0.0:8005"] 
+# Use Gunicorn for production ("--timeout", "600")
+CMD ["gunicorn", "main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8005"]
